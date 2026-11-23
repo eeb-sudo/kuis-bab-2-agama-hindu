@@ -1,0 +1,1988 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kuis Pendidikan Agama Hindu Kelas 6 - Bab 2: Karmaphala</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- html2canvas untuk tangkapan layar kartu nilai -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            stonebg: '#F8F7F4',
+            cardbg: '#FFFFFF',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #F8F7F4;
+      color: #1E293B;
+      -webkit-tap-highlight-color: transparent;
+    }
+    /* Custom scrollbar lembut */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #F1F5F9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94A3B8;
+    }
+    /* Animasi Drawer */
+    .drawer-backdrop {
+      transition: opacity 0.25s ease;
+    }
+    .drawer-panel {
+      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans antialiased selection:bg-teal-100 selection:text-teal-900">
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2 max-w-xs w-full pointer-events-none"></div>
+
+  <!-- Custom Modal Container -->
+  <div id="custom-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs">
+    <div class="bg-white rounded-2xl shadow-xl border border-slate-200 max-w-md w-full p-6 transform transition-all">
+      <div class="flex items-center gap-3 mb-3">
+        <div id="modal-icon" class="w-10 h-10 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center shrink-0">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </div>
+        <h3 id="modal-title" class="text-lg font-bold text-slate-800">Konfirmasi</h3>
+      </div>
+      <p id="modal-message" class="text-sm text-slate-600 leading-relaxed mb-6">Apakah Anda yakin?</p>
+      <div id="modal-actions" class="flex justify-end gap-3">
+        <button id="modal-cancel-btn" class="px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors">Batal</button>
+        <button id="modal-confirm-btn" class="px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-teal-600 hover:bg-teal-700 shadow-xs transition-colors">Ya, Lanjutkan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header Utama -->
+  <header class="bg-white border-b border-slate-200/80 sticky top-0 z-30 shadow-2xs">
+    <div class="max-w-4xl mx-auto px-4 py-3.5 flex items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center font-bold text-lg shadow-xs shrink-0">
+          ॐ
+        </div>
+        <div>
+          <span class="inline-block text-[11px] font-bold uppercase tracking-wider text-teal-700 bg-teal-50 px-2 py-0.5 rounded-md border border-teal-200/60">Agama Hindu • Kelas VI</span>
+          <h1 class="text-sm sm:text-base font-bold text-slate-800 leading-tight mt-0.5">Bab 2: Memahami Karmaphala</h1>
+        </div>
+      </div>
+
+      <!-- Tombol Drawer Daftar Nomor Soal (Muncul hanya saat kuis aktif) -->
+      <div id="quiz-header-controls" class="hidden items-center gap-2">
+        <div class="hidden sm:flex items-center gap-1.5 text-xs font-semibold text-slate-600 bg-slate-100 px-3 py-2 rounded-xl border border-slate-200/70">
+          <span>Terjawab:</span>
+          <span id="answered-counter" class="text-teal-700 font-bold">0/30</span>
+        </div>
+        <button type="button" onclick="toggleDrawer(true)" class="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 text-xs sm:text-sm font-semibold transition-colors cursor-pointer">
+          <svg class="w-4 h-4 text-teal-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path></svg>
+          <span>Daftar Soal</span>
+          <span id="mobile-counter-badge" class="sm:hidden bg-teal-600 text-white text-[11px] px-1.5 py-0.2 rounded-md">0/30</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Drawer Navigasi Nomor Soal Tersembunyi -->
+  <div id="nav-drawer-overlay" class="fixed inset-0 z-40 hidden">
+    <div onclick="toggleDrawer(false)" class="drawer-backdrop fixed inset-0 bg-slate-900/40 backdrop-blur-2xs"></div>
+    <div class="drawer-panel fixed top-0 right-0 bottom-0 w-80 max-w-[88vw] bg-white shadow-2xl border-l border-slate-200 flex flex-col z-50">
+      <div class="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50/70">
+        <div>
+          <h2 class="font-bold text-slate-800 text-base">Navigasi Nomor Soal</h2>
+          <p class="text-xs text-slate-500 mt-0.5">Klik nomor untuk melompat ke soal</p>
+        </div>
+        <button type="button" onclick="toggleDrawer(false)" class="p-2 rounded-xl text-slate-500 hover:bg-slate-200/70 hover:text-slate-800 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+      
+      <!-- Indikator Warna -->
+      <div class="px-4 py-3 bg-stonebg border-b border-slate-200/80 flex flex-wrap gap-3 text-xs text-slate-600">
+        <div class="flex items-center gap-1.5">
+          <span class="w-3.5 h-3.5 rounded-md bg-teal-600 inline-block"></span>
+          <span>Sudah Dijawab</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="w-3.5 h-3.5 rounded-md bg-white border border-slate-300 inline-block"></span>
+          <span>Belum Dijawab</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="w-3.5 h-3.5 rounded-md ring-2 ring-amber-500 bg-white inline-block"></span>
+          <span>Sedang Dibuka</span>
+        </div>
+      </div>
+
+      <!-- Grid 30 Nomor -->
+      <div class="p-4 overflow-y-auto flex-1">
+        <div id="drawer-number-grid" class="grid grid-cols-5 gap-2.5">
+          <!-- Diisi via JavaScript -->
+        </div>
+      </div>
+
+      <div class="p-4 border-t border-slate-200 bg-slate-50">
+        <button type="button" onclick="toggleDrawer(false); confirmFinishQuiz();" class="w-full py-3 px-4 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-semibold text-sm shadow-xs transition-colors">
+          Selesai & Kumpulkan Jawaban
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Konten Utama -->
+  <main class="flex-1 max-w-4xl w-full mx-auto px-4 py-6 sm:py-8">
+
+    <!-- ==================== 1. HALAMAN BIODATA AWAL ==================== -->
+    <section id="view-intro" class="max-w-xl mx-auto">
+      <div class="bg-white rounded-3xl shadow-xs border border-slate-200/90 overflow-hidden">
+        <div class="bg-gradient-to-br from-teal-700 via-teal-600 to-slate-700 p-6 sm:p-8 text-white">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 text-teal-50 text-xs font-medium mb-3 backdrop-blur-xs">
+            <span>Evaluasi Pembelajaran Interaktif</span>
+          </div>
+          <h2 class="text-xl sm:text-2xl font-extrabold tracking-tight leading-snug">Memahami Karmaphala Sebagai Hukum Sebab-Akibat</h2>
+          <p class="text-teal-100 text-xs sm:text-sm mt-2 leading-relaxed">
+            Pendidikan Agama Hindu dan Budi Pekerti • Kelas VI SD • 30 Butir Soal
+          </p>
+        </div>
+
+        <div class="p-6 sm:p-8">
+          <!-- Petunjuk Singkat -->
+          <div class="bg-stonebg border border-slate-200/80 rounded-2xl p-4 mb-6 text-xs sm:text-sm text-slate-600 space-y-2">
+            <p class="font-bold text-slate-800 flex items-center gap-1.5">
+              <svg class="w-4 h-4 text-teal-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              Aturan Pengerjaan Kuis:
+            </p>
+            <ul class="list-disc pl-5 space-y-1 text-slate-600">
+              <li>Kuis hanya dapat dikerjakan <strong>1 kali</strong> pada perangkat ini.</li>
+              <li>Terdiri dari 21 soal Pilihan Ganda, 6 soal Pilihan Ganda Kompleks (centang lebih dari satu), dan 3 soal Kategori (Benar/Salah atau Sesuai/Tidak Sesuai).</li>
+              <li>Isi identitas diri dengan lengkap dan benar sebelum memulai.</li>
+            </ul>
+          </div>
+
+          <!-- Form Identitas (Menggunakan DIV, BUKAN TAG FORM) -->
+          <div id="student-identity-box" class="space-y-4">
+            <div>
+              <label for="input-nama" class="block text-xs sm:text-sm font-semibold text-slate-700 mb-1.5">Nama Lengkap Siswa <span class="text-amber-600">*</span></label>
+              <input type="text" id="input-nama" autocomplete="off" placeholder="Contoh: I Putu Bayu Pratama" class="w-full px-4 py-3 rounded-xl border border-slate-300 bg-white text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/40 focus:border-teal-600 transition-all">
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label for="input-absen" class="block text-xs sm:text-sm font-semibold text-slate-700 mb-1.5">Nomor Absen <span class="text-amber-600">*</span></label>
+                <input type="text" id="input-absen" autocomplete="off" placeholder="Contoh: 07" class="w-full px-4 py-3 rounded-xl border border-slate-300 bg-white text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/40 focus:border-teal-600 transition-all">
+              </div>
+
+              <div>
+                <label for="input-kelas" class="block text-xs sm:text-sm font-semibold text-slate-700 mb-1.5">Kelas <span class="text-amber-600">*</span></label>
+                <input type="text" id="input-kelas" autocomplete="off" placeholder="Contoh: VI A" class="w-full px-4 py-3 rounded-xl border border-slate-300 bg-white text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/40 focus:border-teal-600 transition-all">
+              </div>
+            </div>
+
+            <div class="pt-3">
+              <button type="button" onclick="startQuiz()" class="w-full py-3.5 px-6 rounded-xl bg-teal-600 hover:bg-teal-700 active:scale-[0.99] text-white font-bold text-sm sm:text-base shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer">
+                <span>Mulai Mengerjakan Kuis</span>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 2. HALAMAN PENGERJAAN KUIS ==================== -->
+    <section id="view-quiz" class="hidden">
+      <!-- Bar Identitas Ringkas -->
+      <div class="bg-white rounded-2xl px-4 py-3 mb-4 border border-slate-200/80 shadow-2xs flex flex-wrap items-center justify-between gap-2 text-xs text-slate-600">
+        <div class="flex items-center gap-2 font-medium">
+          <span class="w-2 h-2 rounded-full bg-teal-500"></span>
+          <span id="quiz-student-banner" class="font-semibold text-slate-800">Siswa</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <span id="question-type-badge" class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-semibold">Pilihan Ganda</span>
+        </div>
+      </div>
+
+      <!-- Kartu Soal Utama (Transisi mulus tanpa animasi ulang/kedip) -->
+      <div id="question-card" class="bg-white rounded-3xl p-5 sm:p-8 shadow-xs border border-slate-200/90">
+        <!-- Nomor Soal -->
+        <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+          <div class="flex items-center gap-2.5">
+            <span class="px-3 py-1 rounded-xl bg-teal-600 text-white font-bold text-sm">Soal <span id="q-number">1</span> <span class="font-normal text-teal-100">/ 30</span></span>
+            <span id="q-instruction-tag" class="text-xs font-medium text-slate-500">Pilih satu jawaban paling tepat</span>
+          </div>
+        </div>
+
+        <!-- Wacana / Cerita (Jika ada) -->
+        <div id="q-passage-box" class="hidden mb-5 p-4 sm:p-5 rounded-2xl bg-stonebg border border-slate-200/90 text-slate-700 text-sm leading-relaxed">
+          <div id="q-passage-header" class="text-xs font-bold uppercase tracking-wider text-teal-700 mb-2 flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+            <span id="q-passage-title">Bacalah wacana berikut!</span>
+          </div>
+          <div id="q-passage-text" class="space-y-2 text-slate-700"></div>
+        </div>
+
+        <!-- Ilustrasi SVG / Gambar Soal (Jika ada) -->
+        <div id="q-image-box" class="hidden mb-5">
+          <div id="q-image-render" class="rounded-2xl overflow-hidden border border-slate-200 bg-slate-50 flex flex-col items-center justify-center p-3"></div>
+          <p id="q-image-caption" class="text-xs text-center text-slate-500 mt-1.5 italic"></p>
+        </div>
+
+        <!-- Teks Pertanyaan -->
+        <div id="q-text" class="text-base sm:text-lg font-semibold text-slate-800 leading-relaxed mb-6">
+          Memuat pertanyaan...
+        </div>
+
+        <!-- Area Opsi Jawaban (Di-render tanpa re-trigger animasi) -->
+        <div id="q-options-container" class="space-y-3">
+          <!-- Opsi PG / MCMA / Kategori -->
+        </div>
+      </div>
+
+      <!-- Navigasi Bawah (Sebelumnya / Berikutnya / Selesai) -->
+      <div class="mt-5 flex items-center justify-between gap-3">
+        <button type="button" id="btn-prev" onclick="navigateQuestion(-1)" class="px-4 sm:px-5 py-3 rounded-xl bg-white hover:bg-slate-100 text-slate-700 font-semibold text-sm border border-slate-200 shadow-2xs disabled:opacity-40 disabled:pointer-events-none transition-colors flex items-center gap-2 cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+          <span>Sebelumnya</span>
+        </button>
+
+        <button type="button" id="btn-next" onclick="navigateQuestion(1)" class="px-5 sm:px-6 py-3 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-semibold text-sm shadow-xs transition-colors flex items-center gap-2 cursor-pointer">
+          <span>Berikutnya</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        </button>
+
+        <button type="button" id="btn-finish" onclick="confirmFinishQuiz()" class="hidden px-5 sm:px-6 py-3 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-sm shadow-xs transition-colors items-center gap-2 cursor-pointer">
+          <span>Selesai & Kumpulkan</span>
+          <svg class="w-4 h-4 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- ==================== 3. HALAMAN REKAP HASIL AKHIR ==================== -->
+    <section id="view-recap" class="hidden space-y-6">
+      
+      <!-- Status Pengiriman Otomatis ke Google Sheets -->
+      <div id="sync-status-banner" class="rounded-2xl px-4 py-3 bg-teal-50 border border-teal-200 text-teal-800 text-xs sm:text-sm flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <span id="sync-dot" class="w-2.5 h-2.5 rounded-full bg-teal-600"></span>
+          <span id="sync-text" class="font-medium">Nilai otomatis tersimpan dan dikirim ke rekap guru.</span>
+        </div>
+        <span class="text-[11px] font-semibold uppercase tracking-wider bg-white px-2 py-0.5 rounded-md border border-teal-200 text-teal-700">Terkunci</span>
+      </div>
+
+      <!-- KARTU HASIL NILAI (Target Screenshot html2canvas) -->
+      <div id="score-card-capture" class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+        <!-- Header Kartu -->
+        <div class="bg-gradient-to-r from-slate-800 via-slate-700 to-teal-800 px-6 py-5 text-white flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p class="text-[11px] uppercase tracking-widest text-teal-200 font-bold">Laporan Hasil Evaluasi Belajar</p>
+            <h2 class="text-lg sm:text-xl font-extrabold mt-0.5">Pendidikan Agama Hindu • Kelas VI</h2>
+            <p class="text-xs text-slate-200 mt-0.5">Bab 2: Memahami Karmaphala Sebagai Hukum Sebab-Akibat</p>
+          </div>
+          <div class="bg-white/10 backdrop-blur-xs border border-white/20 rounded-2xl px-4 py-2 text-center">
+            <span class="block text-[10px] uppercase tracking-wider text-teal-200 font-semibold">Nilai Akhir</span>
+            <span id="recap-grade" class="text-3xl sm:text-4xl font-black text-white">0</span>
+          </div>
+        </div>
+
+        <div class="p-5 sm:p-6 space-y-5">
+          <!-- Identitas Siswa: 1 Kotak Ringkas Horizontal -->
+          <div class="bg-stonebg border border-slate-200/90 rounded-2xl px-4 py-3 flex flex-wrap items-center justify-between gap-x-6 gap-y-2 text-xs sm:text-sm">
+            <div class="flex items-center gap-1.5">
+              <span class="text-slate-500">Nama:</span>
+              <span id="recap-nama" class="font-bold text-slate-800">-</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="text-slate-500">No. Absen:</span>
+              <span id="recap-absen" class="font-bold text-slate-800">-</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="text-slate-500">Kelas:</span>
+              <span id="recap-kelas" class="font-bold text-slate-800">-</span>
+            </div>
+          </div>
+
+          <!-- Rincian Jawaban (Benar Penuh, Benar Sebagian, Salah) -->
+          <div class="grid grid-cols-3 gap-3">
+            <div class="bg-teal-50/70 border border-teal-200/80 rounded-2xl p-3.5 text-center">
+              <span class="block text-xs font-semibold text-teal-800">Benar Penuh</span>
+              <span id="recap-correct" class="text-2xl font-extrabold text-teal-700 mt-1 block">0</span>
+              <span class="text-[11px] text-teal-600">soal</span>
+            </div>
+            <div class="bg-amber-50/70 border border-amber-200/80 rounded-2xl p-3.5 text-center">
+              <span class="block text-xs font-semibold text-amber-800">Benar Sebagian</span>
+              <span id="recap-partial" class="text-2xl font-extrabold text-amber-700 mt-1 block">0</span>
+              <span class="text-[11px] text-amber-600">soal</span>
+            </div>
+            <div class="bg-slate-100 border border-slate-200/90 rounded-2xl p-3.5 text-center">
+              <span class="block text-xs font-semibold text-slate-700">Salah</span>
+              <span id="recap-wrong" class="text-2xl font-extrabold text-slate-700 mt-1 block">0</span>
+              <span class="text-[11px] text-slate-500">soal</span>
+            </div>
+          </div>
+
+          <!-- Informasi Waktu Pengerjaan -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-2 border-t border-slate-100 text-xs">
+            <div class="bg-slate-50 rounded-xl p-3 border border-slate-200/60">
+              <span class="text-slate-500 block">Waktu Mulai</span>
+              <span id="recap-start" class="font-semibold text-slate-800 mt-0.5 block">-</span>
+            </div>
+            <div class="bg-slate-50 rounded-xl p-3 border border-slate-200/60">
+              <span class="text-slate-500 block">Waktu Selesai</span>
+              <span id="recap-end" class="font-semibold text-slate-800 mt-0.5 block">-</span>
+            </div>
+            <div class="bg-slate-50 rounded-xl p-3 border border-slate-200/60">
+              <span class="text-slate-500 block">Durasi Pengerjaan</span>
+              <span id="recap-duration" class="font-semibold text-teal-700 mt-0.5 block">-</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tombol Kirim Bukti Screenshot Otomatis ke WhatsApp -->
+      <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="text-center sm:text-left">
+          <h3 class="font-bold text-slate-800 text-sm sm:text-base">Kirim Bukti Hasil ke Guru / Orang Tua</h3>
+          <p class="text-xs text-slate-500 mt-0.5">Otomatis mengambil gambar kartu nilai, menyalinnya, dan melampirkan ke WhatsApp.</p>
+        </div>
+        <button type="button" id="btn-share-wa" onclick="shareRecapToWhatsApp()" class="w-full sm:w-auto shrink-0 px-5 py-3.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-sm shadow-xs transition-all flex items-center justify-center gap-2.5 cursor-pointer">
+          <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.1.824z"/></svg>
+          <span>Kirim Hasil ke WhatsApp</span>
+        </button>
+      </div>
+
+      <!-- Kunci Jawaban & Pembahasan Lengkap -->
+      <div class="bg-white rounded-3xl p-5 sm:p-8 border border-slate-200 shadow-xs">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 mb-6 border-b border-slate-200">
+          <div>
+            <h3 class="text-lg font-extrabold text-slate-800">Kunci Jawaban & Pembahasan Lengkap</h3>
+            <p class="text-xs text-slate-500 mt-0.5">Pelajari kembali pembahasan seluruh 30 soal di bawah ini</p>
+          </div>
+          <button type="button" onclick="copyAllExplanations()" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-xs sm:text-sm border border-slate-300/80 transition-colors flex items-center justify-center gap-2 cursor-pointer">
+            <svg class="w-4 h-4 text-teal-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+            <span>Salin Semua Pembahasan Soal</span>
+          </button>
+        </div>
+
+        <div id="explanations-list" class="space-y-4">
+          <!-- Diisi otomatis via JavaScript -->
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Footer & Tombol Panel Guru -->
+  <footer class="mt-auto border-t border-slate-200/80 bg-white/70 py-5 px-4">
+    <div class="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+      <p>Pendidikan Agama Hindu & Budi Pekerti • Kelas VI SD (Kurikulum Merdeka)</p>
+      <button type="button" onclick="openTeacherLogin()" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 font-medium border border-slate-200/80 transition-colors flex items-center gap-1.5 cursor-pointer">
+        <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+        <span>Panel Guru & Pengaturan Rekap</span>
+      </button>
+    </div>
+  </footer>
+
+  <!-- ==================== MODAL LOGIN & PANEL GURU ==================== -->
+  <div id="teacher-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto">
+    <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-2xl w-full overflow-hidden my-8">
+      <!-- Header Modal Guru -->
+      <div class="bg-slate-800 px-6 py-4 text-white flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-teal-600 flex items-center justify-center">
+            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+          </div>
+          <h3 class="font-bold text-base">Panel Guru & Pengaturan Rekap</h3>
+        </div>
+        <button type="button" onclick="closeTeacherModal()" class="p-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+
+      <!-- Layar Login PIN (Tanpa bocoran angka PIN) -->
+      <div id="teacher-pin-screen" class="p-6 sm:p-8 text-center max-w-sm mx-auto">
+        <div class="w-12 h-12 rounded-2xl bg-slate-100 text-slate-700 flex items-center justify-center mx-auto mb-3">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+        </div>
+        <h4 class="font-bold text-slate-800 text-base">Verifikasi Akses Guru</h4>
+        <p class="text-xs text-slate-500 mt-1 mb-5">Masukkan PIN keamanan untuk membuka pengaturan rekap.</p>
+        <input type="password" id="teacher-pin-input" maxlength="12" placeholder="••••••" class="w-full text-center tracking-widest text-lg font-bold px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-teal-500 mb-4" onkeyup="if(event.key==='Enter') verifyTeacherPin()">
+        <button type="button" onclick="verifyTeacherPin()" class="w-full py-3 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-semibold text-sm transition-colors cursor-pointer">
+          Buka Panel Guru
+        </button>
+      </div>
+
+      <!-- Konten Dashboard Guru (Setelah PIN Benar) -->
+      <div id="teacher-dashboard-screen" class="hidden p-6 space-y-6 max-h-[78vh] overflow-y-auto">
+        
+        <!-- A. Status Koneksi Google Sheets -->
+        <div class="p-4 rounded-2xl bg-stonebg border border-slate-200 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-teal-700">A. Integrasi Google Sheets</span>
+              <h4 class="font-bold text-slate-800 text-sm mt-0.5">Status Koneksi & Tab Tujuan</h4>
+            </div>
+            <span id="sheet-conn-badge" class="px-2.5 py-1 rounded-full text-xs font-semibold bg-teal-100 text-teal-800">Siap Terhubung</span>
+          </div>
+          <div class="text-xs text-slate-600 space-y-1 bg-white p-3 rounded-xl border border-slate-200/80">
+            <p><strong>Nama Tab Target:</strong> <code id="display-tab-name" class="text-teal-700 font-bold bg-teal-50 px-1.5 py-0.5 rounded"></code></p>
+            <p class="truncate"><strong>URL Web App:</strong> <span id="display-script-url" class="text-slate-500"></span></p>
+          </div>
+          <button type="button" id="btn-test-sheet" onclick="testSheetConnection()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold transition-colors cursor-pointer">
+            Tes Koneksi ke Google Sheets
+          </button>
+        </div>
+
+        <!-- B. Ubah PIN Guru -->
+        <div class="p-4 rounded-2xl bg-stonebg border border-slate-200 space-y-3">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-teal-700">B. Keamanan Akses</span>
+            <h4 class="font-bold text-slate-800 text-sm mt-0.5">Ubah PIN Guru</h4>
+          </div>
+          <div class="flex flex-col sm:flex-row gap-2">
+            <input type="password" id="new-teacher-pin" placeholder="Masukkan PIN baru (min. 4 angka)" class="flex-1 px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-teal-500">
+            <button type="button" onclick="saveNewTeacherPin()" class="px-4 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold transition-colors cursor-pointer">
+              Simpan PIN Baru
+            </button>
+          </div>
+        </div>
+
+        <!-- C. Reset Kunci Perangkat Ini -->
+        <div class="p-4 rounded-2xl bg-amber-50/60 border border-amber-200/80 space-y-3">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-amber-800">C. Uji Coba Perangkat</span>
+            <h4 class="font-bold text-slate-800 text-sm mt-0.5">Reset Kunci Pengerjaan Perangkat Ini</h4>
+            <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+              Tombol ini <strong>hanya membuka kembali kunci 1x pengerjaan</strong> pada perangkat yang sedang dipakai untuk keperluan uji coba guru (<strong>tidak menghapus</strong> data nilai siswa yang sudah masuk di Google Sheets). Tampilan akan langsung kembali ke halaman biodata awal tanpa memuat ulang halaman.
+            </p>
+          </div>
+          <button type="button" onclick="resetDeviceLock()" class="px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold shadow-2xs transition-colors cursor-pointer">
+            Reset Kunci Perangkat Ini
+          </button>
+        </div>
+
+        <!-- D. Cadangan Kode Google Apps Script Multi-Tab -->
+        <div class="p-4 rounded-2xl bg-stonebg border border-slate-200 space-y-3">
+          <div class="flex items-center justify-between gap-2">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-teal-700">D. Cadangan Skrip Server</span>
+              <h4 class="font-bold text-slate-800 text-sm mt-0.5">Kode Google Apps Script Multi-Tab (doPost)</h4>
+            </div>
+            <button type="button" onclick="copyAppsScriptCode()" class="px-3 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 text-xs font-semibold transition-colors cursor-pointer">
+              Salin Kode
+            </button>
+          </div>
+          <pre id="apps-script-code" class="bg-slate-900 text-slate-100 p-3.5 rounded-xl text-[11px] overflow-x-auto leading-relaxed font-mono">function doPost(e) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var data = JSON.parse(e.postData.contents);
+  
+  // Otomatis memilih atau membuat tab sheet baru sesuai nama materi/bab dari kuis
+  var tabName = data.materi || "Sheet1";
+  var sheet = ss.getSheetByName(tabName);
+  
+  if (!sheet) {
+    sheet = ss.insertSheet(tabName);
+  }
+  
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(["Waktu Kumpul", "Nama Lengkap", "No Absen", "Kelas", "Nilai Akhir", "Benar", "Sebagian", "Salah", "Durasi"]);
+  }
+  
+  sheet.appendRow([
+    data.endTimeFormatted,
+    data.nama,
+    data.absen,
+    data.kelas,
+    data.finalGrade,
+    data.fullCorrectCount,
+    data.partialCount,
+    data.wrongCount,
+    data.duration
+  ]);
+  
+  return ContentService.createTextOutput(JSON.stringify({status: "success"})).setMimeType(ContentService.MimeType.JSON);
+}</pre>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== LOGIKA JAVASCRIPT APLIKASI ==================== -->
+  <script>
+    // =========================================================================
+    // 1. KONFIGURASI KONSTANTA UTAMA
+    // =========================================================================
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzm1dvZWeiTIr64eDDHo44rFyWyZlfudIZq6mhCWZDbSKo-by45SndRZH8GSNRn8pw1/exec";
+    const SHEET_TAB_NAME = "Bab 2 latihan soal";
+    const STORAGE_KEY_QUIZ = "kuis_agama_hindu_kls6_bab2_karmaphala_v1";
+    const STORAGE_KEY_PIN = "kuis_agama_hindu_kls6_teacher_pin";
+    const DEFAULT_PIN = "123456";
+
+    // =========================================================================
+    // 2. BANK SOAL (30 SOAL SESUAI BUKU PDF BAB 2: KARMAPHALA)
+    // Komposisi:
+    // - 21 Pilihan Ganda Sederhana (70%) -> type: 'pg', poin: 1
+    // - 6 Pilihan Ganda Kompleks MCMA (20%) -> type: 'mcma', poin maks: 3 (1 jika sebagian)
+    // - 3 Pilihan Ganda Kompleks Kategori (10%) -> type: 'category', poin maks: 3 (1 jika sebagian)
+    // Posisi MCMA (nomor 3, 9, 14, 19, 24, 28) & Kategori (nomor 6, 17, 26) diacak!
+    // =========================================================================
+
+    const PASSAGES = {
+      mandawya: {
+        title: "Wacana 1 (Untuk Soal Nomor 12 dan 13) — Kisah Pahala Sang Maharsi Mandawya",
+        text: `<p>Ketika masih berusia kanak-kanak, Rsi Mandawya sering bermain-main dengan binatang-binatang kecil seperti burung, lebah, dan capung. Tanpa disadarinya, perbuatan itu menyakiti hewan-hewan kecil tersebut. Bhagawan Dharma mengingatkan bahwa sekecil apa pun perbuatan baik atau buruk pasti mendapat balasan yang setimpal.</p>
+               <p>Bertahun-tahun kemudian, saat Rsi Mandawya dewasa dan tengah khusyuk bermeditasi (tapa brata) di pertapaannya, segerombolan perampok menyembunyikan barang curian di sana. Prajurit kerajaan yang mengejar perampok mengira Rsi Mandawya adalah pemimpin perampok karena beliau tetap diam saat ditanya. Sang Raja pun menjatuhkan hukuman tombak kepada Rsi Mandawya. Meski tubuhnya dihujani tombak, Rsi Mandawya tetap tenang berkat ketekunan meditasinya. Setelah mengetahui Rsi Mandawya tidak bersalah, Raja memohon ampun. Rsi Mandawya lalu menemui Bhagawan Dharma untuk menanyakan penyebab musibah tersebut, dan sadar bahwa hukuman itu adalah buah dari perbuatan masa kecilnya.</p>`
+      },
+      putri_murti: {
+        title: "Wacana 2 (Untuk Soal Nomor 22, 23, dan 24) — Kisah Putri dan Murti",
+        text: `<p>Di sebuah desa hiduplah dua bersaudara bernama Putri dan Murti. Putri adalah anak yang rajin, penurut, suka menolong, dan rendah hati. Sebaliknya, Murti pemalas, serakah, dan suka memfitnah. Suatu hari saat ibu ke pasar, Putri menyelesaikan semua pekerjaan rumah dan menumbuk padi sendirian karena Murti menolak membantu. Namun, menjelang ibu pulang, Murti mengotori badannya dengan sekam padi lalu memfitnah Putri bahwa Putri hanya bermalas-malasan. Ibu marah dan mengusir Putri.</p>
+               <p>Dengan sabar dan tetap mendoakan ibu serta saudaranya, Putri berjalan ke hutan. Seekor burung merpati merasa iba melihat ketulusan Putri lalu memberinya bungkusan berisi emas dan menasihatinya agar tinggal bersama neneknya. Putri pun hidup bahagia dan rajin bersedekah. Mendengar kabar itu, Murti yang serakah sengaja merobek bajunya sendiri dan berpura-pura lapar di hutan agar diberi emas oleh burung merpati. Namun, burung merpati justru memberinya bungkusan berisi hewan-hewan berbisa dan beracun karena sifat licik dan keserakahannya.</p>`
+      }
+    };
+
+    const ILLUSTRATIONS = {
+      menolong_sepeda: {
+        caption: "Ilustrasi 1: Bayu segera menolong Ayu yang terjatuh dari sepeda di perjalanan.",
+        svg: `<svg viewBox="0 0 320 140" class="w-full max-w-xs h-32 mx-auto">
+                <rect width="320" height="140" rx="12" fill="#F0FDFA"/>
+                <circle cx="60" cy="35" r="14" fill="#FDE68A"/>
+                <path d="M0 115 Q160 100 320 115 L320 140 L0 140 Z" fill="#CCFBF1"/>
+                <!-- Sepeda terjatuh -->
+                <circle cx="220" cy="105" r="16" fill="none" stroke="#475569" stroke-width="3"/>
+                <circle cx="265" cy="108" r="16" fill="none" stroke="#475569" stroke-width="3"/>
+                <path d="M220 105 L242 90 L265 108 M242 90 L238 78" stroke="#0D9488" stroke-width="3" stroke-linecap="round"/>
+                <!-- Anak duduk & anak menolong -->
+                <circle cx="135" cy="58" r="11" fill="#FDBA74"/>
+                <path d="M125 72 L145 72 L150 105 L122 105 Z" fill="#0284C7"/>
+                <path d="M145 78 L168 92" stroke="#FDBA74" stroke-width="5" stroke-linecap="round"/>
+                <circle cx="182" cy="76" r="10" fill="#FDBA74"/>
+                <path d="M172 88 L192 88 L198 112 L168 112 Z" fill="#F97316"/>
+                <path d="M174 92 L165 92" stroke="#FDBA74" stroke-width="5" stroke-linecap="round"/>
+              </svg>`
+      },
+      api_dan_padi: {
+        caption: "Ilustrasi 2: Tangan menyentuh api terasa panas seketika, sedangkan menanam padi dipanen berbulan-bulan kemudian.",
+        svg: `<svg viewBox="0 0 340 135" class="w-full max-w-sm h-32 mx-auto">
+                <rect width="340" height="135" rx="12" fill="#F8FAFC"/>
+                <!-- Sisi Kiri: Api -->
+                <rect x="12" y="12" width="150" height="111" rx="10" fill="#FFFBEB" stroke="#FDE68A"/>
+                <path d="M87 38 C98 55 108 65 102 82 C96 95 78 95 72 82 C66 68 78 52 87 38 Z" fill="#F59E0B"/>
+                <path d="M87 52 C93 62 98 69 94 79 C90 86 84 86 80 79 C76 70 82 60 87 52 Z" fill="#FEF08A"/>
+                <text x="87" y="110" font-size="10" font-weight="bold" fill="#92400E" text-anchor="middle">Api → Panas Seketika</text>
+                <!-- Sisi Kanan: Padi -->
+                <rect x="178" y="12" width="150" height="111" rx="10" fill="#F0FDF4" stroke="#BBF7D0"/>
+                <path d="M225 88 Q230 55 245 45 M245 88 Q248 52 262 42 M265 88 Q265 58 278 48" stroke="#15803D" stroke-width="3" fill="none" stroke-linecap="round"/>
+                <circle cx="245" cy="45" r="3" fill="#EAB308"/><circle cx="262" cy="42" r="3" fill="#EAB308"/><circle cx="278" cy="48" r="3" fill="#EAB308"/>
+                <text x="253" y="110" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">Tanam Padi → Tunggu Panen</text>
+              </svg>`
+      },
+      botol_parfum: {
+        caption: "Ilustrasi 3: Botol minyak wangi yang sudah habis dan dicuci tetap menyisakan aroma harum.",
+        svg: `<svg viewBox="0 0 260 130" class="w-full max-w-xs h-30 mx-auto">
+                <rect width="260" height="130" rx="12" fill="#F0FDFA"/>
+                <rect x="115" y="18" width="30" height="14" rx="4" fill="#64748B"/>
+                <rect x="123" y="32" width="14" height="10" fill="#94A3B8"/>
+                <rect x="102" y="42" width="56" height="68" rx="16" fill="#CCFBF1" stroke="#0D9488" stroke-width="2.5"/>
+                <path d="M172 52 Q182 45 190 52 M176 68 Q188 62 196 68 M72 56 Q82 48 90 56" stroke="#14B8A6" stroke-width="2" fill="none" stroke-linecap="round"/>
+                <text x="130" y="123" font-size="10" font-weight="bold" fill="#0F766E" text-anchor="middle">Sisa aroma melekat = Karma Wasana</text>
+              </svg>`
+      }
+    };
+
+    const QUESTIONS = [
+      // 1. PG
+      {
+        id: 1,
+        type: "pg",
+        text: "Kata <em>Karmaphala</em> berasal dari bahasa Sanskerta, yaitu dari akar kata <em>“kri”</em> yang menjadi kata <em>karma</em> dan <em>phala</em>. Arti dari kata <em>karma</em> dan <em>phala</em> secara berturut-turut adalah ....",
+        options: [
+          "pikiran dan kesucian",
+          "perbuatan dan hasil/buah",
+          "kelahiran dan kematian",
+          "kebaikan dan kebahagiaan"
+        ],
+        correct: 1,
+        explanation: "Dalam bahasa Sanskerta, 'karma' (dari akar kata 'kri') berarti perbuatan atau perilaku, sedangkan 'phala' berarti buah atau hasil. Jadi Karmaphala adalah hasil atau buah dari suatu perbuatan."
+      },
+      // 2. PG
+      {
+        id: 2,
+        type: "pg",
+        text: "Dalam kehidupan di dunia, ada orang yang hidupnya berkecukupan, ada yang kekurangan, serta ada yang mengalami suka maupun duka. Dalam ajaran agama Hindu, hukum yang mengatur sebab-akibat dari semua keadaan tersebut adalah ....",
+        options: [
+          "Hukum Rimba",
+          "Hukum Karmaphala",
+          "Hukum Alam Semesta",
+          "Hukum Perdata"
+        ],
+        correct: 1,
+        explanation: "Hukum Karmaphala merupakan hukum sebab-akibat dalam agama Hindu yang menentukan suka-duka serta keadaan setiap makhluk sesuai perbuatan yang dilakukan."
+      },
+      // 3. MCMA (Pilihan Ganda Kompleks - 3 opsi, >1 benar)
+      {
+        id: 3,
+        type: "mcma",
+        text: "Perhatikan pernyataan-pernyataan berikut! Manakah yang termasuk pengertian serta ruang lingkup <strong>Subha Karma</strong>? <em>(Pilih lebih dari satu jawaban yang benar)</em>",
+        options: [
+          "Segala bentuk tingkah laku yang dibenarkan oleh ajaran agama (dharma).",
+          "Perbuatan yang diawali dari pikiran jernih dan suci sehingga menghasilkan perkataan menyejukkan.",
+          "Perbuatan menyimpang yang menyebabkan manusia berada dalam lingkaran penderitaan."
+        ],
+        correct: [0, 1],
+        explanation: "Subha Karma adalah perbuatan baik yang sesuai dengan ajaran dharma, bersumber dari pikiran yang jernih dan suci sehingga melahirkan ucapan menyejukkan dan tindakan mulia. Opsi ke-3 adalah pengertian Asubha Karma."
+      },
+      // 4. PG (Dengan Gambar)
+      {
+        id: 4,
+        type: "pg",
+        image: ILLUSTRATIONS.menolong_sepeda,
+        text: "Perhatikan ilustrasi di atas! Dalam perjalanan menuju acara ulang tahun, Bayu melihat Ayu jatuh dari sepeda lalu segera menolong dan mengobati lukanya. Tindakan yang dilakukan oleh Bayu merupakan contoh penerapan ....",
+        options: [
+          "Asubha Karma",
+          "Subha Karma",
+          "Karma Wasana buruk",
+          "Kedursilaan"
+        ],
+        correct: 1,
+        explanation: "Menolong teman yang sedang kesulitan atau terjatuh dari sepeda dengan tulus adalah wujud perbuatan baik yang dibenarkan ajaran dharma, sehingga disebut Subha Karma."
+      },
+      // 5. PG
+      {
+        id: 5,
+        type: "pg",
+        text: "Perbuatan buruk yang bertentangan dengan nilai-nilai kebenaran (dharma) serta merusak keharmonisan hidup bersama disebut ....",
+        options: [
+          "Subha Karma",
+          "Asubha Karma",
+          "Panca Sraddha",
+          "Tri Kaya Parisudha"
+        ],
+        correct: 1,
+        explanation: "Asubha Karma adalah segala bentuk perbuatan buruk atau kedursilaan yang bertentangan dengan dharma dan membawa penderitaan."
+      },
+      // 6. KATEGORI (Benar / Salah - 3 pernyataan)
+      {
+        id: 6,
+        type: "category",
+        labels: ["Benar", "Salah"],
+        text: "Tentukan apakah pernyataan mengenai sloka kitab suci tentang Karmaphala berikut ini <strong>Benar</strong> atau <strong>Salah</strong>!",
+        statements: [
+          "Dalam kitab Slokantara 68 tertulis 'Karmaphala ngaran ika palaning gawe hala hayu' yang artinya akibat dari baik buruk suatu perbuatan.",
+          "Dalam kitab Agastya Parwa 355.15 dijelaskan bahwa Bhatara Dharma bergelar Bhatara Yama sebagai Dewa Keadilan yang mengamati perbuatan manusia.",
+          "Menurut ajaran kitab suci, hanya perbuatan fisik saja yang dicatat, sedangkan pikiran dan perkataan tidak menimbulkan karma."
+        ],
+        correct: [0, 0, 1],
+        explanation: "Pernyataan 1 Benar (Slokantara 68). Pernyataan 2 Benar (Agastya Parwa 355.15). Pernyataan 3 Salah karena seluruh gerak-gerik baik dari pikiran, ucapan, maupun perbuatan semuanya menimbulkan akibat/karma."
+      },
+      // 7. PG (Dengan Gambar)
+      {
+        id: 7,
+        type: "pg",
+        image: ILLUSTRATIONS.api_dan_padi,
+        text: "Perhatikan gambar perbandingan di atas! Tangan yang menyentuh api langsung terasa panas seketika, sedangkan petani yang menanam padi harus menunggu berbulan-bulan untuk memetik hasilnya. Ilustrasi tersebut menjelaskan bahwa pembagian Karmaphala dikelompokkan berdasarkan ....",
+        options: [
+          "berat ringannya hukuman yang diterima",
+          "banyak sedikitnya harta yang dimiliki",
+          "cepat lambatnya waktu menikmati hasil perbuatan",
+          "tempat tinggal manusia di bumi"
+        ],
+        correct: 2,
+        explanation: "Berdasarkan cepat lambatnya menikmati hasil perbuatan, Karmaphala dibagi menjadi tiga bagian, yaitu Sancita Karmaphala, Prarabdha Karmaphala, dan Kryamana Karmaphala."
+      },
+      // 8. PG
+      {
+        id: 8,
+        type: "pg",
+        text: "Hasil perbuatan yang dilakukan pada kehidupan masa lampau (sebelumnya), dan buah/hasilnya baru dinikmati pada kehidupan saat ini disebut ....",
+        options: [
+          "Sancita Karmaphala",
+          "Prarabdha Karmaphala",
+          "Kryamana Karmaphala",
+          "Subha Karmaphala"
+        ],
+        correct: 0,
+        explanation: "Sancita Karmaphala adalah hasil perbuatan pada kehidupan masa lampau yang baru diterima atau dinikmati pada kehidupan sekarang."
+      },
+      // 9. MCMA (3 opsi, >1 benar)
+      {
+        id: 9,
+        type: "mcma",
+        text: "Manakah di antara peristiwa berikut yang merupakan contoh nyata dari <strong>Prarabdha Karmaphala</strong>? <em>(Pilih lebih dari satu jawaban yang benar)</em>",
+        options: [
+          "Kasmala menyontek saat ulangan berlangsung, lalu ketahuan dan langsung ditegur oleh gurunya.",
+          "Seorang siswa belajar dengan tekun menjelang ujian sehingga saat ujian selesai ia memperoleh nilai yang bagus.",
+          "Seseorang berbuat jahat hingga akhir hayatnya tanpa ketahuan, lalu menerima akibatnya pada kelahiran berikutnya."
+        ],
+        correct: [0, 1],
+        explanation: "Prarabdha Karmaphala adalah perbuatan yang dilakukan pada kehidupan sekarang dan hasilnya langsung diterima pada kehidupan sekarang juga (contoh 1 dan 2). Contoh 3 adalah Kryamana Karmaphala."
+      },
+      // 10. PG
+      {
+        id: 10,
+        type: "pg",
+        text: "Hasil perbuatan yang dilakukan pada kehidupan sekarang, namun belum sempat dinikmati saat ini sehingga akan diterima pada kehidupan yang akan datang (kelahiran berikutnya) disebut ....",
+        options: [
+          "Sancita Karmaphala",
+          "Prarabdha Karmaphala",
+          "Kryamana Karmaphala",
+          "Karma Wasana"
+        ],
+        correct: 2,
+        explanation: "Kryamana Karmaphala adalah hasil perbuatan pada kehidupan saat ini yang tidak sempat dinikmati sekarang, sehingga diterima pada kehidupan yang akan datang."
+      },
+      // 11. PG (Dengan Gambar Botol Parfum)
+      {
+        id: 11,
+        type: "pg",
+        image: ILLUSTRATIONS.botol_parfum,
+        text: "Sebuah botol minyak wangi meskipun isinya sudah habis dan dicuci bersih, tetap menyisakan bau harum yang melekat pada botol tersebut. Dalam ajaran Karmaphala, sisa bekas/jejak dari perbuatan yang melekat pada Atman disebut ....",
+        options: [
+          "Karma Wasana",
+          "Moksa",
+          "Brahman",
+          "Sarasamuscaya"
+        ],
+        correct: 0,
+        explanation: "Sisa-sisa atau bekas dari perbuatan (karma) yang melekat pada jiwa/Atman bagaikan aroma wangi yang tertinggal di botol disebut Karma Wasana."
+      },
+      // 12. PG (Wacana Mandawya)
+      {
+        id: 12,
+        type: "pg",
+        passage: PASSAGES.mandawya,
+        text: "Berdasarkan Wacana 1 di atas, mengapa Rsi Mandawya tetap diam dan tidak menjawab pertanyaan komandan prajurit kerajaan?",
+        options: [
+          "Karena Rsi Mandawya bersekongkol dengan para perampok.",
+          "Karena beliau sedang khusyuk melaksanakan meditasi (tapa brata).",
+          "Karena beliau merasa takut melihat senjata prajurit kerajaan.",
+          "Karena Rsi Mandawya tidak mendengar suara prajurit."
+        ],
+        correct: 1,
+        explanation: "Dalam kisah Pahala Sang Maharsi Mandawya, beliau tetap diam bukan karena melindungi perampok, melainkan karena sedang khusyuk larut dalam meditasinya."
+      },
+      // 13. PG (Wacana Mandawya)
+      {
+        id: 13,
+        type: "pg",
+        passage: PASSAGES.mandawya,
+        text: "Menurut penjelasan Bhagawan Dharma dalam Wacana 1, apa penyebab Rsi Mandawya mengalami hukuman tombak dari prajurit kerajaan?",
+        options: [
+          "Beliau pernah mencuri harta milik kerajaan saat muda.",
+          "Beliau tidak menghormati sang raja ketika berkunjung ke pertapaan.",
+          "Perbuatan masa kanak-kanaknya yang sering menyiksa burung, lebah, dan capung.",
+          "Kesalahan prajurit kerajaan yang tidak bisa diubah oleh hukum karma."
+        ],
+        correct: 2,
+        explanation: "Bhagawan Dharma menjelaskan bahwa siksaan tombak yang dialami Rsi Mandawya adalah buah karma dari perbuatannya saat masih kecil yang sering bermain dengan menyiksa burung dan capung."
+      },
+      // 14. MCMA (3 opsi, >1 benar)
+      {
+        id: 14,
+        type: "mcma",
+        text: "Hukum Karmaphala memiliki empat sifat utama yang memperkuat keyakinan umat Hindu. Manakah yang termasuk sifat-sifat Hukum Karmaphala? <em>(Pilih lebih dari satu jawaban yang benar)</em>",
+        options: [
+          "Bersifat abadi (berlaku sepanjang masa dan tidak pernah berakhir).",
+          "Bersifat universal (berlaku bagi seluruh ciptaan Hyang Widhi Wasa tanpa pengecualian).",
+          "Dapat dibatalkan atau disuap apabila seseorang memiliki kekuasaan tinggi."
+        ],
+        correct: [0, 1],
+        explanation: "Sifat Hukum Karmaphala meliputi: abadi, universal, pasti dan tak terbatalkan, serta sempurna dan adil. Tidak ada satu pun makhluk yang dapat menghindarinya."
+      },
+      // 15. PG
+      {
+        id: 15,
+        type: "pg",
+        text: "Jika kita menanam benih jagung, maka pasti buah jagunglah yang akan tumbuh, bukan buah yang lain. Perumpamaan ini menunjukkan salah satu sifat Hukum Karmaphala, yaitu ....",
+        options: [
+          "bersifat sementara",
+          "bersifat pasti dan tak terbatalkan",
+          "bersifat rahasia",
+          "bersifat pilih kasih"
+        ],
+        correct: 1,
+        explanation: "Menanam jagung pasti menghasilkan jagung merupakan contoh bahwa Hukum Karmaphala bersifat pasti dan tak terbatalkan; setiap perbuatan membuahkan hasil yang sesuai."
+      },
+      // 16. PG
+      {
+        id: 16,
+        type: "pg",
+        text: "Hukum Karmaphala memiliki hubungan yang sangat erat dengan salah satu bagian Panca Sraddha lainnya, yaitu <em>Punarbhawa</em>. Alasan keterkaitan tersebut adalah ....",
+        options: [
+          "Karmaphala menghapuskan adanya Punarbhawa",
+          "Karmaphala menentukan kualitas kelahiran kembali (Punarbhawa) seseorang",
+          "Punarbhawa tidak dipengaruhi oleh perbuatan baik maupun buruk",
+          "Karmaphala hanya berlaku setelah manusia mencapai Moksa"
+        ],
+        correct: 1,
+        explanation: "Karmaphala sangat erat kaitannya dengan Punarbhawa (reinkarnasi) karena hasil perbuatan (karma wasana) menentukan keadaan serta jenis kelahiran manusia pada kehidupan yang akan datang."
+      },
+      // 17. KATEGORI (Sesuai / Tidak Sesuai - 3 pernyataan)
+      {
+        id: 17,
+        type: "category",
+        labels: ["Sesuai", "Tidak Sesuai"],
+        text: "Tentukan apakah pernyataan mengenai manfaat meyakini Hukum Karmaphala berikut ini <strong>Sesuai</strong> atau <strong>Tidak Sesuai</strong> dengan ajaran agama Hindu!",
+        statements: [
+          "Memotivasi seseorang untuk selalu berbuat baik (Subha Karma) dalam kehidupan sehari-hari.",
+          "Mendorong seseorang bersikap positif, dinamis, dan tidak mudah putus asa saat menghadapi cobaan.",
+          "Membuat seseorang menjadi malas berusaha karena menganggap nasib tidak bisa diperbaiki."
+        ],
+        correct: [0, 0, 1],
+        explanation: "Meyakini Hukum Karmaphala memotivasi kita untuk selalu berbuat baik, bersikap positif, dinamis, bekerja tanpa pamrih, dan tidak mudah putus asa (1 dan 2 Sesuai). Menganggap nasib tidak bisa diperbaiki dengan usaha baik adalah Tidak Sesuai."
+      },
+      // 18. PG
+      {
+        id: 18,
+        type: "pg",
+        text: "Dalam kitab <em>Sarasamuscaya</em> sloka 4 dijelaskan bahwa menjelma menjadi manusia adalah sungguh-sungguh utama karena ....",
+        options: [
+          "manusia memiliki umur yang paling panjang di bumi",
+          "manusia dapat menolong dirinya sendiri dari kesengsaraan dengan berbuat baik",
+          "manusia bebas melakukan perbuatan apa saja tanpa menerima akibat",
+          "manusia tidak pernah mengalami suka maupun duka"
+        ],
+        correct: 1,
+        explanation: "Sarasamuscaya 4 menegaskan keutamaan lahir sebagai manusia karena hanya manusialah yang dapat membedakan baik dan buruk serta menolong dirinya dari sengsara dengan jalan berbuat baik."
+      },
+      // 19. MCMA (3 opsi, >1 benar)
+      {
+        id: 19,
+        type: "mcma",
+        text: "Bagaimana cara mensyukuri kelahiran sebagai manusia sesuai pesan kitab <em>Sarasamuscaya</em>? <em>(Pilih lebih dari satu jawaban yang benar)</em>",
+        options: [
+          "Melebur perbuatan buruk ke dalam perbuatan baik (Subha Karma).",
+          "Menjaga kebersihan diri dan lingkungan agar kesehatan tetap terjaga.",
+          "Menyimpan dendam kepada teman yang pernah berbuat salah."
+        ],
+        correct: [0, 1],
+        explanation: "Dalam Sarasamuscaya 2 & 4, manusia hendaknya melebur perbuatan buruk ke dalam perbuatan baik, menjaga perilaku sehat dan bersih, serta menjauhi sifat pendendam."
+      },
+      // 20. PG
+      {
+        id: 20,
+        type: "pg",
+        text: "Dalam kitab <em>Wrhaspati Tattwa 3</em> dinyatakan bahwa semua perbuatan yang dilakukan manusia di dunia ini akan meninggalkan bekas yang membuat seseorang mengecap akibatnya di alam lain maupun kelahiran nanti. Bekas perbuatan tersebut disebut ....",
+        options: [
+          "Wasana",
+          "Dharma",
+          "Widhi",
+          "Bhakti"
+        ],
+        correct: 0,
+        explanation: "Wrhaspati Tattwa 3 menyebutkan 'Wasana merupakan semua perbuatan yang telah dilakukannya di dunia ini' yang kelak membuahkan akibat baik atau buruk."
+      },
+      // 21. PG
+      {
+        id: 21,
+        type: "pg",
+        text: "Ayu sejak kecil rajin belajar, jujur, rendah hati, dan suka menolong sesama. Ketika dewasa, ia dimudahkan dalam kuliah dan sukses menjadi pengusaha muda yang dermawan. Kisah Ayu menunjukkan bahwa ....",
+        options: [
+          "kesuksesan datang tanpa perlu kerja keras",
+          "perbuatan baik (Subha Karma) membuahkan kebahagiaan bagi diri sendiri dan orang lain",
+          "kekayaan hanya diperoleh dari keberuntungan semata",
+          "orang yang rendah hati akan mudah diremehkan orang lain"
+        ],
+        correct: 1,
+        explanation: "Kisah Ayu membuktikan bahwa ketekunan, kejujuran, dan perilaku Subha Karma akan menghasilkan buah kebahagiaan dan kemudahan hidup."
+      },
+      // 22. PG (Wacana Putri dan Murti)
+      {
+        id: 22,
+        type: "pg",
+        passage: PASSAGES.putri_murti,
+        text: "Berdasarkan Wacana 2 di atas, sikap mulia apa yang ditunjukkan oleh Putri meskipun ia difitnah oleh Murti dan diusir oleh ibunya?",
+        options: [
+          "Putri memarahi Murti di depan ibunya agar terbukti tidak bersalah.",
+          "Putri tetap sabar, menuruti perintah ibunya, dan mendoakan keselamatan ibu serta saudaranya.",
+          "Putri pergi ke hutan untuk mencari hewan berbisa guna membalas Murti.",
+          "Putri membenci ibunya dan tidak mau kembali ke desa."
+        ],
+        correct: 1,
+        explanation: "Putri tidak melawan atau membenci; ia tetap sabar, patuh kepada ibunya, dan sepanjang perjalanan selalu mendoakan kesehatan serta kebahagiaan ibu dan saudaranya."
+      },
+      // 23. PG (Wacana Putri dan Murti)
+      {
+        id: 23,
+        type: "pg",
+        passage: PASSAGES.putri_murti,
+        text: "Mengapa burung merpati memberikan bungkusan berisi hewan berbisa kepada Murti pada akhir Wacana 2?",
+        options: [
+          "Karena burung merpati salah mengambil bungkusan di dalam hutan.",
+          "Karena Murti datang dengan niat licik, serakah, dan berpura-pura menderita demi harta.",
+          "Karena Murti meminta hewan-hewan tersebut untuk dipelihara di rumah.",
+          "Karena Putri menyuruh burung merpati menghukum saudaranya."
+        ],
+        correct: 1,
+        explanation: "Murti menerima buah karma buruk akibat sifat pemalas, suka memfitnah, licik, dan serakah yang ingin menipu burung merpati demi mendapatkan emas."
+      },
+      // 24. MCMA (Wacana Putri dan Murti - 3 opsi, >1 benar)
+      {
+        id: 24,
+        type: "mcma",
+        passage: PASSAGES.putri_murti,
+        text: "Pelajaran moral (hikmah Karmaphala) apa saja yang dapat kita petik dari kisah Putri dan Murti pada Wacana 2? <em>(Pilih lebih dari satu jawaban yang benar)</em>",
+        options: [
+          "Kejujuran, kesabaran, dan sifat suka berbagi akan mendatangkan kebahagiaan serta disukai banyak orang.",
+          "Perbuatan memfitnah dan keserakahan pada akhirnya akan mencelakakan diri sendiri.",
+          "Berpura-pura susah agar dikasihani orang lain adalah cara cerdas mendapatkan hadiah."
+        ],
+        correct: [0, 1],
+        explanation: "Dari kisah Putri dan Murti kita belajar bahwa kejujuran dan kedermawanan berbuah kebahagiaan (Putri), sedangkan fitnah dan keserakahan berbuah penderitaan (Murti)."
+      },
+      // 25. PG
+      {
+        id: 25,
+        type: "pg",
+        text: "Ketika melihat ada teman di kelas yang selalu berperilaku jujur namun keluarganya sedang mengalami kesulitan ekonomi, sikap kita yang tepat berdasarkan pemahaman <em>Sancita Karmaphala</em> adalah ....",
+        options: [
+          "mengejeknya karena menganggap ia tidak rajin berdoa",
+          "tetap menghormati, membantu semampunya, dan menyemangatinya agar terus berbuat baik",
+          "menjauhinya agar tidak tertular kesusahan hidupnya",
+          "menyuruhnya berhenti berbuat baik karena hasilnya tidak langsung terlihat"
+        ],
+        correct: 1,
+        explanation: "Seseorang yang berbuat baik saat ini namun masih mengalami cobaan sedang menuntaskan Sancita Karmaphala masa lalunya. Kita wajib saling menolong dan menyemangati agar tetap teguh di jalan dharma."
+      },
+      // 26. KATEGORI (Tepat / Tidak Tepat - 3 pernyataan)
+      {
+        id: 26,
+        type: "category",
+        labels: ["Tepat", "Tidak Tepat"],
+        text: "Tentukan apakah contoh penerapan Hukum Karmaphala dalam kehidupan sehari-hari berikut ini <strong>Tepat</strong> atau <strong>Tidak Tepat</strong>!",
+        statements: [
+          "Menjaga pola hidup bersih dan mencuci tangan sebelum makan sehingga tubuh menjadi sehat.",
+          "Membuang sampah sembarangan ke selokan yang mengakibatkan banjir saat hujan turun.",
+          "Mengambil barang milik teman secara diam-diam dengan harapan tidak akan pernah mendapat karma."
+        ],
+        correct: [0, 0, 1],
+        explanation: "Pernyataan 1 Tepat (sebab hidup bersih → akibat sehat). Pernyataan 2 Tepat (sebab buang sampah sembarangan → akibat banjir). Pernyataan 3 Tidak Tepat karena Hukum Karmaphala bersifat pasti dan tidak ada yang bisa menghindarinya."
+      },
+      // 27. PG
+      {
+        id: 27,
+        type: "pg",
+        text: "Perhatikan pernyataan berikut:\n1) Budi rajin membantu orang tuanya membersihkan rumah sehingga mendapat pujian.\n2) Seseorang saat ini suka memfitnah orang lain, dan suatu saat dalam hidup ini pula ia dijauhi teman-temannya.\nKedua peristiwa tersebut merupakan contoh dari ....",
+        options: [
+          "Sancita Karmaphala",
+          "Prarabdha Karmaphala",
+          "Kryamana Karmaphala",
+          "Punarbhawa"
+        ],
+        correct: 1,
+        explanation: "Kedua contoh tersebut dilakukan pada kehidupan saat ini dan hasilnya juga diterima dalam kehidupan saat ini, sehingga termasuk Prarabdha Karmaphala."
+      },
+      // 28. MCMA (3 opsi, >1 benar)
+      {
+        id: 28,
+        type: "mcma",
+        text: "Perhatikan perilaku siswa di sekolah berikut! Manakah yang mencerminkan keyakinan terhadap <strong>Hukum Karmaphala</strong>? <em>(Pilih lebih dari satu jawaban yang benar)</em>",
+        options: [
+          "Mengerjakan soal ulangan dengan jujur sesuai kemampuan sendiri tanpa menyontek.",
+          "Menghormati guru dan menyayangi teman tanpa membeda-bedakan.",
+          "Menyalahkan teman lain ketika mendapat nilai ulangan yang rendah."
+        ],
+        correct: [0, 1],
+        explanation: "Siswa yang meyakini Karmaphala akan selalu jujur saat ujian dan menghormati sesama karena sadar setiap tindakan memiliki akibat. Menyalahkan orang lain bukanlah sikap bertanggung jawab."
+      },
+      // 29. PG
+      {
+        id: 29,
+        type: "pg",
+        text: "Hukum Karmaphala bersifat <em>sempurna dan adil</em>. Makna dari sifat tersebut adalah ....",
+        options: [
+          "pahala yang diterima seseorang selalu sesuai dengan kualitas perbuatan yang dilakukannya",
+          "orang kaya mendapat pahala lebih besar daripada orang miskin",
+          "perbuatan buruk yang kecil tidak akan pernah diperhitungkan",
+          "hanya orang dewasa yang terkena hukum sebab-akibat"
+        ],
+        correct: 0,
+        explanation: "Sifat sempurna dan adil berarti perhitungan Hukum Karmaphala tidak pernah keliru; setiap makhluk menerima hasil yang benar-benar setimpal dengan kualitas perbuatannya."
+      },
+      // 30. PG
+      {
+        id: 30,
+        type: "pg",
+        text: "Keyakinan terhadap adanya Hukum Karmaphala merupakan bagian dari lima dasar keyakinan umat Hindu yang disebut ....",
+        options: [
+          "Panca Yama Brata",
+          "Panca Sraddha",
+          "Panca Maha Bhuta",
+          "Panca Yadnya"
+        ],
+        correct: 1,
+        explanation: "Panca Sraddha adalah lima dasar keyakinan agama Hindu, yaitu percaya adanya Brahman, Atman, Karmaphala, Punarbhawa, dan Moksa."
+      }
+    ];
+
+    // =========================================================================
+    // 3. STATE APLIKASI
+    // =========================================================================
+    let appState = {
+      student: { nama: "", absen: "", kelas: "" },
+      startTimeISO: null,
+      endTimeISO: null,
+      currentIndex: 0,
+      // answers[i]:
+      // - untuk 'pg': number (0..3) atau null
+      // - untuk 'mcma': array of numbers (misal [0, 1]) atau []
+      // - untuk 'category': array of 3 numbers (misal [0, 0, 1]) dimana null jika belum dipilih
+      answers: QUESTIONS.map(q => {
+        if (q.type === "pg") return null;
+        if (q.type === "mcma") return [];
+        if (q.type === "category") return [null, null, null];
+      }),
+      isSubmitted: false,
+      result: null
+    };
+
+    // =========================================================================
+    // 4. INISIALISASI HALAMAN (CEK KUNCI LOCALSTORAGE)
+    // =========================================================================
+    window.addEventListener("DOMContentLoaded", () => {
+      // Set info di Panel Guru
+      document.getElementById("display-tab-name").textContent = SHEET_TAB_NAME;
+      document.getElementById("display-script-url").textContent = GOOGLE_SCRIPT_URL;
+
+      // Cek apakah siswa di perangkat ini sudah pernah mengerjakan kuis
+      try {
+        const savedRaw = localStorage.getItem(STORAGE_KEY_QUIZ);
+        if (savedRaw) {
+          const parsed = JSON.parse(savedRaw);
+          if (parsed && parsed.isSubmitted && parsed.result) {
+            appState = parsed;
+            showRecapView();
+            return;
+          }
+        }
+      } catch (err) {
+        console.warn("Gagal membaca localStorage:", err);
+      }
+
+      // Jika belum dikerjakan, tampilkan form biodata awal
+      showIntroView();
+    });
+
+    function showIntroView() {
+      document.getElementById("view-intro").classList.remove("hidden");
+      document.getElementById("view-quiz").classList.add("hidden");
+      document.getElementById("view-recap").classList.add("hidden");
+      document.getElementById("quiz-header-controls").classList.add("hidden");
+      document.getElementById("quiz-header-controls").classList.remove("flex");
+    }
+
+    // =========================================================================
+    // 5. MULAI KUIS & VALIDASI FORM BIODATA
+    // =========================================================================
+    function startQuiz() {
+      const nama = document.getElementById("input-nama").value.trim();
+      const absen = document.getElementById("input-absen").value.trim();
+      const kelas = document.getElementById("input-kelas").value.trim();
+
+      if (!nama) {
+        showToast("Silakan isi Nama Lengkap terlebih dahulu.", "warning");
+        document.getElementById("input-nama").focus();
+        return;
+      }
+      if (!absen) {
+        showToast("Silakan isi Nomor Absen terlebih dahulu.", "warning");
+        document.getElementById("input-absen").focus();
+        return;
+      }
+      if (!kelas) {
+        showToast("Silakan isi Kelas terlebih dahulu.", "warning");
+        document.getElementById("input-kelas").focus();
+        return;
+      }
+
+      appState.student = { nama, absen, kelas };
+      appState.startTimeISO = new Date().toISOString();
+      appState.currentIndex = 0;
+
+      // Update UI Header & Banner
+      document.getElementById("quiz-student-banner").textContent = `${nama} • Absen ${absen} • Kelas ${kelas}`;
+      document.getElementById("view-intro").classList.add("hidden");
+      document.getElementById("view-quiz").classList.remove("hidden");
+      document.getElementById("quiz-header-controls").classList.remove("hidden");
+      document.getElementById("quiz-header-controls").classList.add("flex");
+
+      buildDrawerGrid();
+      updateAnsweredCounters();
+      renderQuestion(0);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // =========================================================================
+    // 6. RENDER SOAL & INTERAKSI OPSI (TANPA KEDIPAN / TANPA ANIMASI ULANG)
+    // =========================================================================
+    function renderQuestion(index) {
+      appState.currentIndex = index;
+      const q = QUESTIONS[index];
+
+      // Update Nomor & Badge Tipe Soal
+      document.getElementById("q-number").textContent = index + 1;
+      const typeBadge = document.getElementById("question-type-badge");
+      const instTag = document.getElementById("q-instruction-tag");
+
+      if (q.type === "pg") {
+        typeBadge.textContent = "Pilihan Ganda";
+        instTag.textContent = "Pilih satu jawaban paling tepat";
+      } else if (q.type === "mcma") {
+        typeBadge.textContent = "Pilihan Ganda Kompleks";
+        instTag.textContent = "Centang lebih dari satu jawaban benar";
+      } else if (q.type === "category") {
+        typeBadge.textContent = "Pilihan Ganda Kategori";
+        instTag.textContent = "Tentukan pilihan pada setiap pernyataan";
+      }
+
+      // Render Wacana (jika ada)
+      const passageBox = document.getElementById("q-passage-box");
+      if (q.passage) {
+        passageBox.classList.remove("hidden");
+        document.getElementById("q-passage-title").textContent = q.passage.title;
+        document.getElementById("q-passage-text").innerHTML = q.passage.text;
+      } else {
+        passageBox.classList.add("hidden");
+      }
+
+      // Render Gambar / Ilustrasi (jika ada)
+      const imageBox = document.getElementById("q-image-box");
+      if (q.image) {
+        imageBox.classList.remove("hidden");
+        document.getElementById("q-image-render").innerHTML = q.image.svg;
+        document.getElementById("q-image-caption").textContent = q.image.caption;
+      } else {
+        imageBox.classList.add("hidden");
+      }
+
+      // Render Teks Pertanyaan (pertahankan baris baru jika ada)
+      document.getElementById("q-text").innerHTML = q.text.replace(/\n/g, "<br>");
+
+      // Render Opsi Jawaban
+      renderOptionsOnly(index);
+
+      // Update Tombol Navigasi Bawah
+      document.getElementById("btn-prev").disabled = (index === 0);
+      const btnNext = document.getElementById("btn-next");
+      const btnFinish = document.getElementById("btn-finish");
+
+      if (index === QUESTIONS.length - 1) {
+        btnNext.classList.add("hidden");
+        btnFinish.classList.remove("hidden");
+        btnFinish.classList.add("flex");
+      } else {
+        btnNext.classList.remove("hidden");
+        btnFinish.classList.add("hidden");
+        btnFinish.classList.remove("flex");
+      }
+
+      updateDrawerHighlight();
+    }
+
+    // Memperbarui tampilan opsi secara mulus tanpa menggetarkan kartu soal
+    function renderOptionsOnly(index) {
+      const q = QUESTIONS[index];
+      const container = document.getElementById("q-options-container");
+      const ans = appState.answers[index];
+
+      if (q.type === "pg") {
+        const letters = ["A", "B", "C", "D"];
+        container.innerHTML = q.options.map((optText, optIdx) => {
+          const isSelected = (ans === optIdx);
+          return `
+            <div onclick="selectPG(${index}, ${optIdx})" role="button" tabindex="0"
+                 class="p-3.5 sm:p-4 rounded-2xl border-2 cursor-pointer flex items-start gap-3.5 select-none ${
+                   isSelected
+                     ? "border-teal-600 bg-teal-50/70 text-slate-900"
+                     : "border-slate-200 bg-white hover:border-teal-300 hover:bg-slate-50/80 text-slate-700"
+                 }">
+              <span class="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 ${
+                isSelected ? "bg-teal-600 text-white" : "bg-slate-100 text-slate-600"
+              }">${letters[optIdx]}</span>
+              <span class="text-sm sm:text-base leading-snug pt-0.5">${optText}</span>
+            </div>
+          `;
+        }).join("");
+      } 
+      else if (q.type === "mcma") {
+        container.innerHTML = q.options.map((optText, optIdx) => {
+          const isChecked = Array.isArray(ans) && ans.includes(optIdx);
+          return `
+            <div onclick="toggleMCMA(${index}, ${optIdx})" role="checkbox" aria-checked="${isChecked}" tabindex="0"
+                 class="p-3.5 sm:p-4 rounded-2xl border-2 cursor-pointer flex items-start gap-3.5 select-none ${
+                   isChecked
+                     ? "border-teal-600 bg-teal-50/70 text-slate-900"
+                     : "border-slate-200 bg-white hover:border-teal-300 hover:bg-slate-50/80 text-slate-700"
+                 }">
+              <div class="w-6 h-6 rounded-md border-2 flex items-center justify-center shrink-0 mt-0.5 ${
+                isChecked ? "border-teal-600 bg-teal-600 text-white" : "border-slate-300 bg-white"
+              }">
+                ${isChecked ? `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>` : ""}
+              </div>
+              <span class="text-sm sm:text-base leading-snug">${optText}</span>
+            </div>
+          `;
+        }).join("");
+      } 
+      else if (q.type === "category") {
+        const [label0, label1] = q.labels;
+        container.innerHTML = `
+          <div class="overflow-hidden rounded-2xl border border-slate-200">
+            <div class="hidden sm:grid sm:grid-cols-12 bg-slate-100 px-4 py-3 text-xs font-bold text-slate-700 border-b border-slate-200">
+              <div class="col-span-8">Pernyataan</div>
+              <div class="col-span-2 text-center">${label0}</div>
+              <div class="col-span-2 text-center">${label1}</div>
+            </div>
+            <div class="divide-y divide-slate-200 bg-white">
+              ${q.statements.map((stmt, rowIdx) => {
+                const rowVal = ans[rowIdx];
+                return `
+                  <div class="p-4 sm:grid sm:grid-cols-12 sm:items-center gap-3">
+                    <div class="sm:col-span-8 text-sm text-slate-800 leading-relaxed mb-3 sm:mb-0">
+                      <span class="font-bold text-teal-700 mr-1">${rowIdx + 1}.</span> ${stmt}
+                    </div>
+                    <div class="grid grid-cols-2 sm:col-span-4 gap-2">
+                      <button type="button" onclick="selectCategory(${index}, ${rowIdx}, 0)"
+                        class="py-2 px-3 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer ${
+                          rowVal === 0
+                            ? "border-teal-600 bg-teal-600 text-white"
+                            : "border-slate-300 bg-white text-slate-600 hover:bg-slate-50"
+                        }">
+                        <span class="w-3.5 h-3.5 rounded-full border flex items-center justify-center ${rowVal === 0 ? "border-white" : "border-slate-400"}">
+                          ${rowVal === 0 ? '<span class="w-1.5 h-1.5 rounded-full bg-white"></span>' : ""}
+                        </span>
+                        <span>${label0}</span>
+                      </button>
+                      <button type="button" onclick="selectCategory(${index}, ${rowIdx}, 1)"
+                        class="py-2 px-3 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer ${
+                          rowVal === 1
+                            ? "border-teal-600 bg-teal-600 text-white"
+                            : "border-slate-300 bg-white text-slate-600 hover:bg-slate-50"
+                        }">
+                        <span class="w-3.5 h-3.5 rounded-full border flex items-center justify-center ${rowVal === 1 ? "border-white" : "border-slate-400"}">
+                          ${rowVal === 1 ? '<span class="w-1.5 h-1.5 rounded-full bg-white"></span>' : ""}
+                        </span>
+                        <span>${label1}</span>
+                      </button>
+                    </div>
+                  </div>
+                `;
+              }).join("")}
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    function selectPG(qIdx, optIdx) {
+      appState.answers[qIdx] = optIdx;
+      renderOptionsOnly(qIdx);
+      updateAnsweredCounters();
+      updateDrawerHighlight();
+    }
+
+    function toggleMCMA(qIdx, optIdx) {
+      let current = appState.answers[qIdx] || [];
+      if (current.includes(optIdx)) {
+        current = current.filter(item => item !== optIdx);
+      } else {
+        current = [...current, optIdx].sort((a, b) => a - b);
+      }
+      appState.answers[qIdx] = current;
+      renderOptionsOnly(qIdx);
+      updateAnsweredCounters();
+      updateDrawerHighlight();
+    }
+
+    function selectCategory(qIdx, rowIdx, val) {
+      const current = [...appState.answers[qIdx]];
+      current[rowIdx] = val;
+      appState.answers[qIdx] = current;
+      renderOptionsOnly(qIdx);
+      updateAnsweredCounters();
+      updateDrawerHighlight();
+    }
+
+    function navigateQuestion(step) {
+      const target = appState.currentIndex + step;
+      if (target >= 0 && target < QUESTIONS.length) {
+        renderQuestion(target);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    }
+
+    // =========================================================================
+    // 7. NAVIGASI DRAWER NOMOR SOAL
+    // =========================================================================
+    function isQuestionAnswered(idx) {
+      const q = QUESTIONS[idx];
+      const ans = appState.answers[idx];
+      if (q.type === "pg") return ans !== null && ans !== undefined;
+      if (q.type === "mcma") return Array.isArray(ans) && ans.length > 0;
+      if (q.type === "category") return Array.isArray(ans) && ans.every(v => v !== null);
+      return false;
+    }
+
+    function buildDrawerGrid() {
+      const grid = document.getElementById("drawer-number-grid");
+      grid.innerHTML = QUESTIONS.map((q, idx) => `
+        <button type="button" id="drawer-btn-${idx}" onclick="jumpToQuestion(${idx})"
+          class="h-10 rounded-xl font-bold text-xs border transition-colors flex items-center justify-center cursor-pointer">
+          ${idx + 1}
+        </button>
+      `).join("");
+    }
+
+    function updateDrawerHighlight() {
+      QUESTIONS.forEach((_, idx) => {
+        const btn = document.getElementById(`drawer-btn-${idx}`);
+        if (!btn) return;
+        const answered = isQuestionAnswered(idx);
+        const isCurrent = (idx === appState.currentIndex);
+
+        let cls = "h-10 rounded-xl font-bold text-xs border transition-colors flex items-center justify-center cursor-pointer ";
+        if (answered) {
+          cls += "bg-teal-600 text-white border-teal-600 ";
+        } else {
+          cls += "bg-white text-slate-700 border-slate-300 hover:bg-slate-50 ";
+        }
+        if (isCurrent) {
+          cls += "ring-2 ring-amber-500 ring-offset-1 ";
+        }
+        btn.className = cls;
+      });
+    }
+
+    function updateAnsweredCounters() {
+      let count = 0;
+      for (let i = 0; i < QUESTIONS.length; i++) {
+        if (isQuestionAnswered(i)) count++;
+      }
+      document.getElementById("answered-counter").textContent = `${count}/30`;
+      document.getElementById("mobile-counter-badge").textContent = `${count}/30`;
+    }
+
+    function toggleDrawer(open) {
+      const overlay = document.getElementById("nav-drawer-overlay");
+      if (open) {
+        updateDrawerHighlight();
+        overlay.classList.remove("hidden");
+      } else {
+        overlay.classList.add("hidden");
+      }
+    }
+
+    function jumpToQuestion(idx) {
+      toggleDrawer(false);
+      renderQuestion(idx);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // =========================================================================
+    // 8. PENILAIAN, PENGUNCIAN & PENGIRIMAN OTOMATIS KE GOOGLE SHEETS
+    // =========================================================================
+    function confirmFinishQuiz() {
+      let unanswered = 0;
+      for (let i = 0; i < QUESTIONS.length; i++) {
+        if (!isQuestionAnswered(i)) unanswered++;
+      }
+
+      const msg = unanswered > 0
+        ? `Masih ada ${unanswered} soal yang belum dijawab lengkap. Apakah kamu yakin ingin mengumpulkan jawaban sekarang?`
+        : "Semua 30 soal sudah terjawab. Apakah kamu yakin ingin menyelesaikan kuis dan melihat nilaimu?";
+
+      showConfirmModal("Kumpulkan Jawaban Kuis?", msg, () => {
+        submitAndLockQuiz();
+      });
+    }
+
+    function evaluateQuiz() {
+      // Skor maksimal:
+      // 21 PG * 1 = 21 poin
+      // 6 MCMA * 3 = 18 poin
+      // 3 Kategori * 3 = 9 poin
+      // Total Skor Maksimal = 48 poin -> dikonversi ke skala 0 - 100
+      const MAX_SCORE = 48;
+      let earnedScore = 0;
+      let fullCorrectCount = 0;
+      let partialCount = 0;
+      let wrongCount = 0;
+      const perQuestionStatus = [];
+
+      QUESTIONS.forEach((q, idx) => {
+        const ans = appState.answers[idx];
+        let qScore = 0;
+        let status = "wrong"; // 'correct' | 'partial' | 'wrong'
+
+        if (q.type === "pg") {
+          if (ans === q.correct) {
+            qScore = 1;
+            status = "correct";
+            fullCorrectCount++;
+          } else {
+            wrongCount++;
+          }
+        } 
+        else if (q.type === "mcma") {
+          const userArr = Array.isArray(ans) ? ans : [];
+          const correctArr = q.correct;
+          const isExact = userArr.length === correctArr.length && correctArr.every(v => userArr.includes(v));
+          const hasAnyCorrect = userArr.some(v => correctArr.includes(v));
+          const hasWrongChoice = userArr.some(v => !correctArr.includes(v));
+
+          if (isExact) {
+            qScore = 3;
+            status = "correct";
+            fullCorrectCount++;
+          } else if (hasAnyCorrect && !hasWrongChoice) {
+            qScore = 1;
+            status = "partial";
+            partialCount++;
+          } else if (hasAnyCorrect && hasWrongChoice) {
+            // Pedoman: Benar sebagian (minimal 1 jawaban benar) = 1 poin
+            qScore = 1;
+            status = "partial";
+            partialCount++;
+          } else {
+            wrongCount++;
+          }
+        } 
+        else if (q.type === "category") {
+          const userArr = Array.isArray(ans) ? ans : [null, null, null];
+          let matchCount = 0;
+          for (let r = 0; r < 3; r++) {
+            if (userArr[r] === q.correct[r]) matchCount++;
+          }
+
+          if (matchCount === 3) {
+            qScore = 3;
+            status = "correct";
+            fullCorrectCount++;
+          } else if (matchCount >= 1) {
+            qScore = 1;
+            status = "partial";
+            partialCount++;
+          } else {
+            wrongCount++;
+          }
+        }
+
+        earnedScore += qScore;
+        perQuestionStatus.push({ status, qScore });
+      });
+
+      const finalGrade = Math.round((earnedScore / MAX_SCORE) * 100);
+      return {
+        earnedScore,
+        maxScore: MAX_SCORE,
+        finalGrade,
+        fullCorrectCount,
+        partialCount,
+        wrongCount,
+        perQuestionStatus
+      };
+    }
+
+    function formatDateTimeID(dateObj) {
+      const pad = n => String(n).padStart(2, "0");
+      return `${pad(dateObj.getDate())}/${pad(dateObj.getMonth() + 1)}/${dateObj.getFullYear()} ${pad(dateObj.getHours())}:${pad(dateObj.getMinutes())}:${pad(dateObj.getSeconds())}`;
+    }
+
+    function formatDurationID(startDate, endDate) {
+      const diffSec = Math.max(1, Math.floor((endDate - startDate) / 1000));
+      const mins = Math.floor(diffSec / 60);
+      const secs = diffSec % 60;
+      return `${mins} menit ${secs} detik`;
+    }
+
+    function submitAndLockQuiz() {
+      const endDate = new Date();
+      const startDate = appState.startTimeISO ? new Date(appState.startTimeISO) : endDate;
+      appState.endTimeISO = endDate.toISOString();
+
+      const evalRes = evaluateQuiz();
+      const startFormatted = formatDateTimeID(startDate);
+      const endFormatted = formatDateTimeID(endDate);
+      const durationFormatted = formatDurationID(startDate, endDate);
+
+      appState.isSubmitted = true;
+      appState.result = {
+        ...evalRes,
+        startTimeFormatted: startFormatted,
+        endTimeFormatted: endFormatted,
+        duration: durationFormatted
+      };
+
+      // Simpan ke localStorage untuk mengunci pengerjaan 1x
+      try {
+        localStorage.setItem(STORAGE_KEY_QUIZ, JSON.stringify(appState));
+      } catch (e) {
+        console.warn("Gagal menyimpan ke localStorage:", e);
+      }
+
+      // Kirim otomatis ke Google Sheets (tanpa tombol kirim ulang manual)
+      sendResultToGoogleSheets();
+
+      // Tampilkan halaman rekap
+      showRecapView();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function sendResultToGoogleSheets() {
+      if (!appState.result) return;
+      const r = appState.result;
+      const s = appState.student;
+
+      // Payload JSON persis sesuai spesifikasi fungsi doPost(e)
+      const payload = {
+        materi: SHEET_TAB_NAME,
+        endTimeFormatted: r.endTimeFormatted,
+        nama: s.nama,
+        absen: s.absen,
+        kelas: s.kelas,
+        finalGrade: r.finalGrade,
+        fullCorrectCount: r.fullCorrectCount,
+        partialCount: r.partialCount,
+        wrongCount: r.wrongCount,
+        duration: r.duration
+      };
+
+      const syncText = document.getElementById("sync-text");
+      syncText.textContent = "Sedang mengirim nilai otomatis ke rekap guru...";
+
+      fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8"
+        },
+        body: JSON.stringify(payload)
+      })
+      .then(() => {
+        syncText.textContent = `Nilai berhasil terkirim otomatis ke Google Sheets (Tab: ${SHEET_TAB_NAME}).`;
+        showToast("Nilai berhasil dikirim ke rekap guru!", "success");
+      })
+      .catch(err => {
+        console.error("Error pengiriman Sheets:", err);
+        syncText.textContent = "Nilai tersimpan di perangkat ini (pengiriman jaringan tertunda).";
+      });
+    }
+
+    // =========================================================================
+    // 9. TAMPILAN REKAP AKHIR & PEMBAHASAN LENGKAP
+    // =========================================================================
+    function showRecapView() {
+      document.getElementById("view-intro").classList.add("hidden");
+      document.getElementById("view-quiz").classList.add("hidden");
+      document.getElementById("quiz-header-controls").classList.add("hidden");
+      document.getElementById("quiz-header-controls").classList.remove("flex");
+      document.getElementById("view-recap").classList.remove("hidden");
+
+      const r = appState.result;
+      const s = appState.student;
+
+      document.getElementById("recap-nama").textContent = s.nama;
+      document.getElementById("recap-absen").textContent = s.absen;
+      document.getElementById("recap-kelas").textContent = s.kelas;
+
+      document.getElementById("recap-grade").textContent = r.finalGrade;
+      document.getElementById("recap-correct").textContent = r.fullCorrectCount;
+      document.getElementById("recap-partial").textContent = r.partialCount;
+      document.getElementById("recap-wrong").textContent = r.wrongCount;
+
+      document.getElementById("recap-start").textContent = r.startTimeFormatted;
+      document.getElementById("recap-end").textContent = r.endTimeFormatted;
+      document.getElementById("recap-duration").textContent = r.duration;
+
+      renderAllExplanations();
+    }
+
+    function formatStudentAnswerText(q, ans) {
+      if (q.type === "pg") {
+        if (ans === null || ans === undefined) return "Tidak dijawab";
+        const letters = ["A", "B", "C", "D"];
+        return `${letters[ans]}. ${q.options[ans]}`;
+      }
+      if (q.type === "mcma") {
+        if (!Array.isArray(ans) || ans.length === 0) return "Tidak dijawab";
+        return ans.map(i => `✓ ${q.options[i]}`).join(" | ");
+      }
+      if (q.type === "category") {
+        if (!Array.isArray(ans)) return "Tidak dijawab";
+        return ans.map((v, i) => `(${i + 1}) ${v === null ? "-" : q.labels[v]}`).join(", ");
+      }
+      return "-";
+    }
+
+    function formatCorrectAnswerText(q) {
+      if (q.type === "pg") {
+        const letters = ["A", "B", "C", "D"];
+        return `${letters[q.correct]}. ${q.options[q.correct]}`;
+      }
+      if (q.type === "mcma") {
+        return q.correct.map(i => `✓ ${q.options[i]}`).join(" | ");
+      }
+      if (q.type === "category") {
+        return q.correct.map((v, i) => `(${i + 1}) ${q.labels[v]}`).join(", ");
+      }
+      return "-";
+    }
+
+    function renderAllExplanations() {
+      const container = document.getElementById("explanations-list");
+      const statuses = appState.result.perQuestionStatus;
+
+      container.innerHTML = QUESTIONS.map((q, idx) => {
+        const st = statuses[idx].status;
+        const badgeHtml = st === "correct"
+          ? `<span class="px-2.5 py-0.5 rounded-md text-xs font-bold bg-teal-100 text-teal-800">Benar</span>`
+          : st === "partial"
+          ? `<span class="px-2.5 py-0.5 rounded-md text-xs font-bold bg-amber-100 text-amber-800">Benar Sebagian</span>`
+          : `<span class="px-2.5 py-0.5 rounded-md text-xs font-bold bg-slate-200 text-slate-700">Kurang Tepat</span>`;
+
+        const studentAnsStr = formatStudentAnswerText(q, appState.answers[idx]);
+        const correctAnsStr = formatCorrectAnswerText(q);
+
+        return `
+          <div class="p-4 sm:p-5 rounded-2xl border border-slate-200/90 bg-stonebg/50 space-y-2.5">
+            <div class="flex items-center justify-between gap-2">
+              <span class="font-bold text-sm text-teal-800">Soal Nomor ${idx + 1}</span>
+              ${badgeHtml}
+            </div>
+            <p class="text-sm font-medium text-slate-800 leading-relaxed">${q.text.replace(/\n/g, "<br>")}</p>
+            <div class="text-xs space-y-1 pt-1">
+              <p class="text-slate-600"><strong>Jawaban Kamu:</strong> ${studentAnsStr}</p>
+              <p class="text-teal-700"><strong>Kunci Jawaban:</strong> ${correctAnsStr}</p>
+            </div>
+            <div class="bg-white p-3 rounded-xl border border-slate-200/80 text-xs text-slate-600 leading-relaxed">
+              <strong class="text-slate-800">Pembahasan:</strong> ${q.explanation}
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    // Salin Semua Pembahasan Soal menggunakan document.execCommand('copy')
+    function copyAllExplanations() {
+      const s = appState.student;
+      const r = appState.result;
+      let textOutput = `KUNCI JAWABAN & PEMBAHASAN KUIS AGAMA HINDU KELAS 6\n`;
+      textOutput += `Bab 2: Memahami Karmaphala Sebagai Hukum Sebab-Akibat\n`;
+      textOutput += `Siswa: ${s.nama} (Absen: ${s.absen} | Kelas: ${s.kelas}) | Nilai: ${r.finalGrade}\n`;
+      textOutput += `====================================================\n\n`;
+
+      QUESTIONS.forEach((q, idx) => {
+        const cleanQuestion = q.text.replace(/<[^>]*>/g, "");
+        textOutput += `${idx + 1}. ${cleanQuestion}\n`;
+        textOutput += `   Kunci Jawaban : ${formatCorrectAnswerText(q)}\n`;
+        textOutput += `   Pembahasan    : ${q.explanation}\n\n`;
+      });
+
+      copyTextFallback(textOutput, "Seluruh kunci jawaban dan pembahasan berhasil disalin!");
+    }
+
+    function copyTextFallback(text, successMessage) {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      textArea.style.position = "fixed";
+      textArea.style.left = "-9999px";
+      textArea.style.top = "0";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        const successful = document.execCommand("copy");
+        if (successful) {
+          showToast(successMessage, "success");
+        } else {
+          showToast("Gagal menyalin teks.", "warning");
+        }
+      } catch (err) {
+        showToast("Browser tidak mendukung penyalinan otomatis.", "warning");
+      }
+      document.body.removeChild(textArea);
+    }
+
+    // =========================================================================
+    // 10. SCREENSHOT OTOMATIS KARTU NILAI & BERBAGI KE WHATSAPP (Web Share API)
+    // =========================================================================
+    async function shareRecapToWhatsApp() {
+      const btn = document.getElementById("btn-share-wa");
+      const originalHtml = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = `<span>Menyiapkan Gambar Kartu Nilai...</span>`;
+
+      const s = appState.student;
+      const r = appState.result;
+      const reportText = `*LAPORAN HASIL KUIS AGAMA HINDU KELAS 6*\n` +
+        `Materi: ${SHEET_TAB_NAME} (Karmaphala)\n` +
+        `Nama: ${s.nama}\n` +
+        `No. Absen: ${s.absen} | Kelas: ${s.kelas}\n` +
+        `Nilai Akhir: *${r.finalGrade}*\n` +
+        `Rincian: Benar (${r.fullCorrectCount}), Sebagian (${r.partialCount}), Salah (${r.wrongCount})\n` +
+        `Durasi: ${r.duration}\n` +
+        `Waktu Selesai: ${r.endTimeFormatted}`;
+
+      try {
+        const captureEl = document.getElementById("score-card-capture");
+        const canvas = await html2canvas(captureEl, {
+          scale: 2,
+          backgroundColor: "#FFFFFF",
+          useCORS: true
+        });
+
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, "image/png"));
+        const fileName = `Hasil_Kuis_Hindu_${s.nama.replace(/\s+/g, "_")}.png`;
+        const imageFile = new File([blob], fileName, { type: "image/png" });
+
+        // Salin gambar ke clipboard jika didukung browser
+        try {
+          if (navigator.clipboard && window.ClipboardItem) {
+            await navigator.clipboard.write([
+              new ClipboardItem({ "image/png": blob })
+            ]);
+          }
+        } catch (clipErr) {
+          // Abaikan jika dibatasi kebijakan iframe
+        }
+
+        // Gunakan Web Share API untuk melampirkan file .png + teks laporan ke WhatsApp
+        if (navigator.canShare && navigator.canShare({ files: [imageFile] })) {
+          await navigator.share({
+            title: "Hasil Kuis Agama Hindu Kelas 6",
+            text: reportText,
+            files: [imageFile]
+          });
+          showToast("Kartu nilai siap dibagikan ke WhatsApp!", "success");
+        } else {
+          // Fallback jika perangkat/desktop tidak mendukung Web Share file
+          const link = document.createElement("a");
+          link.download = fileName;
+          link.href = canvas.toDataURL("image/png");
+          link.click();
+
+          const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(reportText)}`;
+          window.open(waUrl, "_blank");
+          showToast("Gambar kartu nilai diunduh & WhatsApp dibuka. Silakan lampirkan gambarnya!", "info");
+        }
+      } catch (err) {
+        if (err.name !== "AbortError") {
+          const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(reportText)}`;
+          window.open(waUrl, "_blank");
+          showToast("Membuka WhatsApp dengan teks laporan hasil kuis.", "info");
+        }
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalHtml;
+      }
+    }
+
+    // =========================================================================
+    // 11. PANEL GURU & PENGATURAN REKAP
+    // =========================================================================
+    function getStoredPin() {
+      try {
+        return localStorage.getItem(STORAGE_KEY_PIN) || DEFAULT_PIN;
+      } catch (e) {
+        return DEFAULT_PIN;
+      }
+    }
+
+    function openTeacherLogin() {
+      document.getElementById("teacher-pin-input").value = "";
+      document.getElementById("teacher-pin-screen").classList.remove("hidden");
+      document.getElementById("teacher-dashboard-screen").classList.add("hidden");
+      const modal = document.getElementById("teacher-modal");
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+      setTimeout(() => document.getElementById("teacher-pin-input").focus(), 100);
+    }
+
+    function closeTeacherModal() {
+      const modal = document.getElementById("teacher-modal");
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    }
+
+    function verifyTeacherPin() {
+      const entered = document.getElementById("teacher-pin-input").value.trim();
+      const validPin = getStoredPin();
+      if (entered === validPin) {
+        document.getElementById("teacher-pin-screen").classList.add("hidden");
+        document.getElementById("teacher-dashboard-screen").classList.remove("hidden");
+        showToast("Berhasil masuk ke Panel Guru.", "success");
+      } else {
+        showToast("PIN salah! Silakan periksa kembali.", "warning");
+        document.getElementById("teacher-pin-input").value = "";
+        document.getElementById("teacher-pin-input").focus();
+      }
+    }
+
+    function testSheetConnection() {
+      const btn = document.getElementById("btn-test-sheet");
+      const badge = document.getElementById("sheet-conn-badge");
+      btn.disabled = true;
+      btn.textContent = "Menguji Koneksi...";
+
+      // Kirim ping ringan untuk memastikan endpoint dapat dijangkau
+      fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({
+          materi: SHEET_TAB_NAME,
+          endTimeFormatted: formatDateTimeID(new Date()),
+          nama: "[TES KONEKSI GURU]",
+          absen: "00",
+          kelas: "TES",
+          finalGrade: 100,
+          fullCorrectCount: 30,
+          partialCount: 0,
+          wrongCount: 0,
+          duration: "0 menit 1 detik"
+        })
+      })
+      .then(() => {
+        badge.textContent = "Terhubung (Terkirim)";
+        badge.className = "px-2.5 py-1 rounded-full text-xs font-semibold bg-teal-100 text-teal-800";
+        showToast(`Tes koneksi berhasil! Cek tab "${SHEET_TAB_NAME}" di Google Sheets.`, "success");
+      })
+      .catch(() => {
+        badge.textContent = "Gagal Terhubung";
+        badge.className = "px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800";
+        showToast("Gagal menghubungi URL Google Script.", "warning");
+      })
+      .finally(() => {
+        btn.disabled = false;
+        btn.textContent = "Tes Koneksi ke Google Sheets";
+      });
+    }
+
+    function saveNewTeacherPin() {
+      const newPin = document.getElementById("new-teacher-pin").value.trim();
+      if (newPin.length < 4) {
+        showToast("PIN baru minimal terdiri dari 4 karakter/angka.", "warning");
+        return;
+      }
+      try {
+        localStorage.setItem(STORAGE_KEY_PIN, newPin);
+        document.getElementById("new-teacher-pin").value = "";
+        showToast("PIN Guru berhasil diperbarui!", "success");
+      } catch (e) {
+        showToast("Gagal menyimpan PIN baru di browser ini.", "warning");
+      }
+    }
+
+    function resetDeviceLock() {
+      showConfirmModal(
+        "Reset Kunci Perangkat Ini?",
+        "Tindakan ini hanya membuka kembali kunci 1x pengerjaan di perangkat ini untuk uji coba (data nilai yang sudah masuk di Google Sheets tetap aman). Lanjutkan?",
+        () => {
+          try {
+            localStorage.removeItem(STORAGE_KEY_QUIZ);
+          } catch (e) {}
+
+          // Reset state tanpa reload halaman (agar tidak blank di Google Sites)
+          appState = {
+            student: { nama: "", absen: "", kelas: "" },
+            startTimeISO: null,
+            endTimeISO: null,
+            currentIndex: 0,
+            answers: QUESTIONS.map(q => {
+              if (q.type === "pg") return null;
+              if (q.type === "mcma") return [];
+              if (q.type === "category") return [null, null, null];
+            }),
+            isSubmitted: false,
+            result: null
+          };
+
+          document.getElementById("input-nama").value = "";
+          document.getElementById("input-absen").value = "";
+          document.getElementById("input-kelas").value = "";
+
+          closeTeacherModal();
+          showIntroView();
+          showToast("Kunci perangkat berhasil direset. Siap untuk uji coba baru!", "success");
+        }
+      );
+    }
+
+    function copyAppsScriptCode() {
+      const codeText = document.getElementById("apps-script-code").textContent;
+      copyTextFallback(codeText, "Kode Google Apps Script berhasil disalin!");
+    }
+
+    // =========================================================================
+    // 12. UTILITAS TOAST & MODAL KUSTOM (PENGGANTI ALERT & CONFIRM)
+    // =========================================================================
+    function showToast(message, type = "info") {
+      const container = document.getElementById("toast-container");
+      const toast = document.createElement("div");
+      const colors = {
+        success: "bg-teal-800 text-white border-teal-700",
+        warning: "bg-amber-700 text-white border-amber-600",
+        info: "bg-slate-800 text-white border-slate-700"
+      };
+      toast.className = `pointer-events-auto px-4 py-3 rounded-xl shadow-lg border text-xs sm:text-sm font-medium flex items-center gap-2.5 transform transition-all duration-300 translate-y-0 opacity-100 ${colors[type] || colors.info}`;
+      toast.innerHTML = `<span>${message}</span>`;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = "0";
+        toast.style.transform = "translateY(-8px)";
+        setTimeout(() => toast.remove(), 300);
+      }, 3400);
+    }
+
+    function showConfirmModal(title, message, onConfirmCallback) {
+      const modal = document.getElementById("custom-modal");
+      document.getElementById("modal-title").textContent = title;
+      document.getElementById("modal-message").textContent = message;
+
+      const cancelBtn = document.getElementById("modal-cancel-btn");
+      const confirmBtn = document.getElementById("modal-confirm-btn");
+
+      const closeModal = () => {
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+      };
+
+      cancelBtn.onclick = closeModal;
+      confirmBtn.onclick = () => {
+        closeModal();
+        if (typeof onConfirmCallback === "function") {
+          onConfirmCallback();
+        }
+      };
+
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+    }
+  </script>
+</body>
+</html>
